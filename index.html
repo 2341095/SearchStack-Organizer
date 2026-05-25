@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SearchStack - 検索結果とタブのスマート整理・再発見</title>
+    <!-- Google Fonts: Outfit (headings) & Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 背景の浮遊グラデーションオーブ -->
+    <div class="bg-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- メインアプリケーションコンテナ -->
+    <div class="app-container">
+        
+        <!-- 左サイドバー (ナビゲーション & カテゴリ) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i data-lucide="layers" class="logo-icon"></i>
+                    <span>SearchStack</span>
+                </div>
+                <span class="logo-subtitle">Smart Browser Manager</span>
+            </div>
+
+            <!-- ビュー切り替え -->
+            <div class="nav-section">
+                <h3 class="section-title">表示ビュー</h3>
+                <div class="view-switcher">
+                    <button class="view-btn active" id="btn-board-view">
+                        <i data-lucide="layout-grid"></i>
+                        <span>ボード表示</span>
+                    </button>
+                    <button class="view-btn" id="btn-timeline-view">
+                        <i data-lucide="calendar"></i>
+                        <span>タイムライン</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ジャンル (カテゴリ) リスト -->
+            <div class="nav-section">
+                <h3 class="section-title">ジャンル区分</h3>
+                <ul class="category-list" id="category-list">
+                    <li class="category-item active" data-category="all">
+                        <i data-lucide="folder"></i>
+                        <span class="category-name">すべて</span>
+                        <span class="category-count" id="count-all">0</span>
+                    </li>
+                    <!-- JavaScriptで動的に追加されます -->
+                </ul>
+            </div>
+
+            <!-- アプリ情報 & 統計 -->
+            <div class="sidebar-footer">
+                <div class="stats-panel">
+                    <div class="stat-item">
+                        <span class="stat-val" id="stat-total-tabs">0</span>
+                        <span class="stat-lbl">保存タブ</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-val" id="stat-stacked-groups">0</span>
+                        <span class="stat-lbl">スタック</span>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <i data-lucide="sparkles"></i>
+                    <p>タブを「重ねる」ことで、ブラウザ迷子から解放されます。</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 中央メインコンテンツ (カードボード & 検索) -->
+        <main class="main-content">
+            <!-- トップコントロールバー -->
+            <header class="top-bar">
+                <div class="search-wrapper">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="search-input" placeholder="キーワード、URL、概要から検索..." autocomplete="off">
+                    <button class="clear-search-btn" id="clear-search" style="display: none;">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                
+                <div class="action-controls">
+                    <!-- 自動スタックトグル -->
+                    <div class="control-switch-wrapper">
+                        <span class="switch-label">
+                            <i data-lucide="copy"></i>
+                            類似タブを重ねる
+                        </span>
+                        <label class="switch">
+                            <input type="checkbox" id="auto-stack-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <!-- 新規タブ追加トグル -->
+                    <button class="btn btn-primary" id="btn-toggle-add-form">
+                        <i data-lucide="plus"></i>
+                        <span>新規タブ追加</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 新規タブ追加フォーム (アコーディオン表示) -->
+            <section class="add-tab-section" id="add-tab-section">
+                <div class="add-tab-card">
+                    <div class="add-tab-header">
+                        <h4>新しい検索結果・タブの登録シミュレーション</h4>
+                        <p>ブラウザで新しいページを開いたり、検索した時の動作をシミュレートします。</p>
+                    </div>
+                    <form id="add-tab-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="input-title">タイトル</label>
+                                <input type="text" id="input-title" placeholder="例: Tailwind CSS - Rapidly build modern websites" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="input-url">URL</label>
+                                <input type="url" id="input-url" placeholder="https://tailwindcss.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="input-query">検索キーワード</label>
+                                <input type="text" id="input-query" placeholder="例: tailwind css ドキュメント 導入方法">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-category">ジャンル (空欄で自動判定)</label>
+                                <select id="input-category">
+                                    <option value="">自動判定 (AI)</option>
+                                    <option value="プログラミング">プログラミング</option>
+                                    <option value="デザイン">デザイン</option>
+                                    <option value="AI・機械学習">AI・機械学習</option>
+                                    <option value="旅行・情報">旅行・情報</option>
+                                    <option value="その他">その他</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="input-summary">ページの概要・要約（ひと目でわかる内容）</label>
+                            <textarea id="input-summary" rows="2" placeholder="例: ユーティリティファーストのCSSフレームワーク。HTMLを離れることなく素早くUIを構築できる。" required></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" id="btn-cancel-add">キャンセル</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="plus-circle"></i>
+                                <span>タブを保存</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ボード表示エリア -->
+            <div class="board-view-container" id="board-view">
+                <div class="view-header">
+                    <h2 class="view-title" id="current-genre-title">すべての検索結果</h2>
+                    <span class="tab-count-badge" id="visible-tabs-count">0 件</span>
+                </div>
+                
+                <!-- カードグリッド -->
+                <div class="tab-grid" id="tab-grid">
+                    <!-- JavaScriptでカード/スタックが挿入されます -->
+                </div>
+            </div>
+
+            <!-- タイムライン表示エリア (初期非表示) -->
+            <div class="timeline-view-container" id="timeline-view" style="display: none;">
+                <div class="view-header">
+                    <h2 class="view-title">さかのぼり履歴 (タイムライン)</h2>
+                    <span class="tab-count-badge" id="timeline-tabs-count">0 件</span>
+                </div>
+                
+                <!-- タイムラインリスト -->
+                <div class="timeline-list" id="timeline-list">
+                    <!-- JavaScriptでタイムライン項目が挿入されます -->
+                </div>
+            </div>
+        </main>
+
+        <!-- 右サイドバー (提案 & アシスタント) -->
+        <aside class="suggestion-panel">
+            <div class="panel-header">
+                <i data-lucide="sparkles" class="panel-header-icon"></i>
+                <h3>AI 提案・アシスタント</h3>
+            </div>
+
+            <!-- 提案セクション 1: 正確な情報の提示 -->
+            <div class="suggestion-card">
+                <div class="suggestion-card-header text-success">
+                    <i data-lucide="shield-check"></i>
+                    <h4>信頼性の高い過去情報</h4>
+                </div>
+                <div class="suggestion-card-body">
+                    <p class="suggestion-desc">現在の検索内容や閲覧履歴に基づいて、過去に保存された最も正確で評価の高い公式ソースを提案します。</p>
+                    <div id="trusted-suggestion-container">
+                        <!-- アクティブな検索やカード選択に応じて提示 -->
+                        <div class="empty-state-sm">
+                            <i data-lucide="search"></i>
+                            <p>検索結果を選択するか、キーワードを入力すると信頼性の高い情報がここに提案されます。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 提案セクション 2: 重複/類似タブのスタック化推奨 -->
+            <div class="suggestion-card">
+                <div class="suggestion-card-header text-warning">
+                    <i data-lucide="layers"></i>
+                    <h4>スマートスタックの推奨</h4>
+                </div>
+                <div class="suggestion-card-body">
+                    <p class="suggestion-desc">テーマが非常に近いタブが複数開かれています。これらを重ねて整理しませんか？</p>
+                    <div id="stack-recommendation-container">
+                        <!-- 重複タブがある場合に提示 -->
+                        <div class="empty-state-sm">
+                            <i data-lucide="check-circle-2"></i>
+                            <p>現在、重複または類似する未整理タブはありません。綺麗に整理されています！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- クイック Tips -->
+            <div class="quick-tips">
+                <h5><i data-lucide="help-circle"></i> クイックヒント</h5>
+                <ul>
+                    <li>スタックされたカードをクリックすると、重ねられた類似タブが展開されます。</li>
+                    <li>「類似タブを重ねる」をオフにすると、すべてのタブがフラットに展開されます。</li>
+                    <li>ジャンル自動判定を選択すると、概要のテキストからAIが自動的にジャンルを判別します。</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 詳細表示・プレビュー用モーダルダイアログ -->
+    <div class="modal-backdrop" id="tab-detail-modal" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="btn-close-modal">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-body" id="modal-content">
+                <!-- JavaScriptで詳細内容を流し込みます -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 読み込み -->
+    <script src="app.js"></script>
+</body>
+</html>
