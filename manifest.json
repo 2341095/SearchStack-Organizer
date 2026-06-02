@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "SearchStack - Smart Browser Manager",
+  "version": "1.0",
+  "description": "検索結果とタブのスマート整理・再発見ツール。類似タブの自動スタックとブラウザ履歴の整理を行います。",
+  "permissions": [
+    "history"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "SearchStack"
+  }
+}

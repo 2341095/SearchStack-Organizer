@@ -150,9 +150,13 @@ let activeView = 'board'; // 'board' または 'timeline'
 let searchQuery = '';
 let autoStack = true;
 let expandedStacks = new Set(); // 展開されたスタックキー(stackKey)を保存
+let currentTheme = localStorage.getItem("searchstack-theme") || "dark";
 
 // DOMの初期化
 document.addEventListener("DOMContentLoaded", () => {
+    // テーマの初期適用
+    applyTheme(currentTheme);
+
     // Lucideアイコンのレンダリング
     lucide.createIcons();
 
@@ -163,6 +167,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // イベントリスナーの登録
     setupEventListeners();
 });
+
+// テーマ適用ヘルパー
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    const sunIcon = document.getElementById("theme-icon-sun");
+    const moonIcon = document.getElementById("theme-icon-moon");
+    if (sunIcon && moonIcon) {
+        if (theme === "light") {
+            sunIcon.style.display = "none";
+            moonIcon.style.display = "block";
+        } else {
+            sunIcon.style.display = "block";
+            moonIcon.style.display = "none";
+        }
+    }
+}
 
 // カテゴリ sidebar の初期化
 function initCategories() {
@@ -330,16 +350,39 @@ function renderBoard() {
                 stackWrapper.className = `tab-stack ${isExpanded ? 'expanded' : 'collapsed'}`;
                 stackWrapper.setAttribute("data-stack-key", key);
 
+                // 日付順(最新が一番上)にソートして配置
+                groupTabs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
                 // 何枚重なっているかのバッジ (collapsed時のみ)
                 if (!isExpanded) {
                     const badge = document.createElement("span");
                     badge.className = "stack-count-badge";
                     badge.textContent = `${groupTabs.length} 重ね`;
                     stackWrapper.appendChild(badge);
-                }
 
-                // 日付順(最新が一番上)にソートして配置
-                groupTabs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    // ホバー時に表示される簡易リストを追加
+                    const hoverList = document.createElement("div");
+                    hoverList.className = "stack-hover-list";
+                    hoverList.innerHTML = `<div class="stack-hover-header">重ねられたタブ一覧</div>`;
+                    
+                    // 上位5件まで表示
+                    groupTabs.slice(0, 5).forEach(t => {
+                        const item = document.createElement("div");
+                        item.className = "stack-hover-item";
+                        item.innerHTML = `
+                            <span class="stack-hover-title">${t.title}</span>
+                            <span class="stack-hover-domain">${t.domain}</span>
+                        `;
+                        hoverList.appendChild(item);
+                    });
+                    if (groupTabs.length > 5) {
+                        const moreItem = document.createElement("div");
+                        moreItem.className = "stack-hover-item";
+                        moreItem.innerHTML = `<span class="stack-hover-title" style="color:var(--text-muted)">他 ${groupTabs.length - 5} 件のタブ...</span>`;
+                        hoverList.appendChild(moreItem);
+                    }
+                    stackWrapper.appendChild(hoverList);
+                }
 
                 groupTabs.forEach((tab, index) => {
                     const card = createCardElement(tab);
@@ -851,6 +894,248 @@ function setupEventListeners() {
         // 成功通知風のコンソール表示/体験
         console.log(`新規タブが保存されました: [${category}] ${title}`);
     });
+
+    // テーマ切り替え
+    const themeBtn = document.getElementById("theme-toggle");
+    if (themeBtn) {
+        themeBtn.addEventListener("click", () => {
+            currentTheme = currentTheme === "dark" ? "light" : "dark";
+            localStorage.setItem("searchstack-theme", currentTheme);
+            applyTheme(currentTheme);
+        });
+    }
+
+    // 履歴同期
+    const syncBtn = document.getElementById("btn-sync-history");
+    if (syncBtn) {
+        syncBtn.addEventListener("click", showSyncHistoryModal);
+    }
+
+    // 履歴同期モーダルを閉じる
+    const syncModal = document.getElementById("sync-history-modal");
+    if (syncModal) {
+        document.getElementById("btn-close-sync-modal").addEventListener("click", () => {
+            syncModal.classList.remove("open");
+        });
+        syncModal.addEventListener("click", (e) => {
+            if (e.target.id === "sync-history-modal") {
+                syncModal.classList.remove("open");
+            }
+        });
+    }
+}
+
+// 履歴同期モーダルの表示制御
+function showSyncHistoryModal() {
+    const modal = document.getElementById("sync-history-modal");
+    const content = document.getElementById("sync-modal-content");
+    
+    // chrome.history API が利用可能かチェック (拡張機能として動いているか)
+    const isExtension = typeof chrome !== 'undefined' && chrome.history;
+    
+    if (isExtension) {
+        // 実際の拡張機能環境の場合の表示
+        content.innerHTML = `
+            <div class="modal-detail-header">
+                <h3 class="modal-detail-title">ブラウザ履歴とのリアルタイム同期</h3>
+                <p style="font-size:12px; color:var(--text-secondary); margin-top:4px;">拡張機能APIを検知しました。直近のブラウザ履歴を取得し、スタックを構築します。</p>
+            </div>
+            <div style="text-align:center; padding: 24px 0;">
+                <div class="sync-loader" style="margin-bottom:16px;">
+                    <i data-lucide="refresh-cw" class="animate-spin" style="width: 36px; height: 36px; stroke: var(--color-primary); margin:0 auto; display:block;"></i>
+                </div>
+                <p id="sync-status-text" style="font-size:13px; font-weight:600;">同期の準備をしています...</p>
+                <div style="background:rgba(255,255,255,0.05); border-radius:8px; height:6px; width:80%; margin: 12px auto 0; overflow:hidden; position:relative;">
+                    <div id="sync-progress" style="background:var(--color-primary); height:100%; width:0%; transition: width 0.3s; position:absolute; left:0; top:0;"></div>
+                </div>
+            </div>
+        `;
+        modal.classList.add("open");
+        lucide.createIcons();
+        
+        // 実際の履歴取得処理を実行
+        executeRealHistorySync();
+    } else {
+        // 通常のWeb表示（フォールバック）
+        content.innerHTML = `
+            <div class="modal-detail-header">
+                <h3 class="modal-detail-title">ブラウザの履歴を参照する</h3>
+                <p style="font-size:12px; color:var(--text-secondary); margin-top:4px;">通常のWebサイト（GitHub Pagesなど）からは、セキュリティ上ブラウザの履歴に直接アクセスできません。</p>
+            </div>
+            
+            <div class="sync-guide-card">
+                <div class="sync-guide-title">実際の履歴と同期する手順 (Chrome拡張機能)</div>
+                <div class="sync-guide-step">
+                    <span class="step-number">1</span>
+                    <span class="step-text">このソースフォルダをダウンロードします。</span>
+                </div>
+                <div class="sync-guide-step">
+                    <span class="step-number">2</span>
+                    <span class="step-text">Chromeで <code>chrome://extensions/</code> を開き、<strong>「デベロッパーモード」</strong>を有効にします。</span>
+                </div>
+                <div class="sync-guide-step">
+                    <span class="step-number">3</span>
+                    <span class="step-text"><strong>「パッケージ化されていない拡張機能を読み込む」</strong>ボタンから、本フォルダを選択します。</span>
+                </div>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:16px;">
+                <button class="btn btn-primary" id="btn-load-demo-history" style="width:100%; justify-content:center;">
+                    <i data-lucide="sparkles"></i>
+                    <span>代わりに「デモ用ブラウザ履歴」を読み込む</span>
+                </button>
+                <p style="font-size:10px; text-align:center; color:var(--text-muted);">※ デモ用の履歴（技術ドキュメントや観光地検索など13件）をロードし、自動スタック化を体験します。</p>
+            </div>
+        `;
+        modal.classList.add("open");
+        lucide.createIcons();
+        
+        document.getElementById("btn-load-demo-history").addEventListener("click", loadDemoHistory);
+    }
+}
+
+// デモ履歴データ
+const demoHistoryData = [
+    { title: "京都観光おすすめスポット30選 - LINEトラベルjp", url: "https://www.travel.co.jp/guide/special/kyoto/", query: "京都 観光 おすすめ", category: "旅行・情報" },
+    { title: "京都の定番＆穴場モデルコース | そうだ 京都、行こう。", url: "https://souda-kyoto.jp/travel/route/", query: "京都 観光 モデルコース", category: "旅行・情報" },
+    { title: "嵐山・嵯峨野のおすすめ観光・グルメスポット | 楽天トラベル", url: "https://travel.rakuten.co.jp/mytrip/ranking/arashiyama-guide", query: "嵐山 観光 スポット", category: "旅行・情報" },
+    
+    { title: "Gemini API Overview | Google for Developers", url: "https://ai.google.dev/gemini-api/docs", query: "gemini api 使い方", category: "AI・機械学習" },
+    { title: "Getting started with the Gemini API | Python SDK", url: "https://ai.google.dev/gemini-api/docs/quickstart?lang=python", query: "gemini api python", category: "AI・機械学習" },
+    { title: "LLMのファインチューニング(Fine-tuning)の基礎を学ぶ", url: "https://qiita.com/llm-finetuning-basic", query: "llm ファインチューニング", category: "AI・機械学習" },
+    { title: "PyTorchチュートリアル：ニューラルネットワークの構築", url: "https://pytorch.org/tutorials/beginner/blitz/neural_networks_tutorial.html", query: "pytorch チュートリアル", category: "AI・機械学習" },
+    
+    { title: "React 19 upgrades and hooks - Dev.to", url: "https://dev.to/react-community/react-19-hooks", query: "react 19 変更点", category: "プログラミング" },
+    { title: "Next.js App Routerでのデータ取得とキャッシュ機能", url: "https://nextjs.org/docs/app/building-your-application/data-fetching", query: "nextjs fetch caching", category: "プログラミング" },
+    { title: "JavaScriptの非同期処理(Promise, async/await)再入門", url: "https://zenn.dev/async-javascript", query: "js 非同期処理", category: "プログラミング" },
+    
+    { title: "CSS-Tricks: A Complete Guide to CSS Grid Layout", url: "https://css-tricks.com/snippets/css/complete-guide-grid/", query: "css grid 使い方", category: "デザイン" },
+    { title: "Beautiful CSS box-shadow examples - CSS Scan", url: "https://getcssscan.com/css-box-shadow-examples", query: "css box-shadow おしゃれ", category: "デザイン" },
+    { title: "Glassmorphism UI Generator - CSS generator", url: "https://glassmorphic.design", query: "css グラスモルフィズム ジェネレーター", category: "デザイン" }
+];
+
+function loadDemoHistory() {
+    const statusBtn = document.getElementById("btn-load-demo-history");
+    if (statusBtn) {
+        statusBtn.disabled = true;
+        statusBtn.innerHTML = `<i data-lucide="refresh-cw" class="animate-spin" style="width:14px; height:14px; margin-right:4px; display:inline-block; vertical-align:middle;"></i>同期中...`;
+        lucide.createIcons();
+    }
+    
+    setTimeout(() => {
+        const now = new Date();
+        demoHistoryData.forEach((item, index) => {
+            const itemDate = new Date(now.getTime() - (index * 15 * 60 * 1000));
+            
+            let domain = "unknown.com";
+            try { domain = new URL(item.url).hostname.replace("www.", ""); } catch(e) {}
+            
+            const stackKey = determineStackKey(item.title + " " + item.query);
+            
+            const newTab = {
+                id: Date.now() + index,
+                title: item.title,
+                url: item.url,
+                query: item.query,
+                category: item.category,
+                summary: `${item.title}のページです。シミュレーション履歴からインポートされました。`,
+                date: itemDate.toISOString(),
+                domain: domain,
+                rating: domain.includes("docs") || domain.includes("developer") ? 5 : 4,
+                isTrusted: domain.includes("docs") || domain.includes("developer") || domain.includes("google") || domain.includes("pytorch"),
+                stackKey: stackKey
+            };
+            
+            if (!tabs.some(t => t.url === newTab.url)) {
+                tabs.unshift(newTab);
+            }
+        });
+        
+        const syncModal = document.getElementById("sync-history-modal");
+        if (syncModal) syncModal.classList.remove("open");
+        
+        initCategories();
+        render();
+        
+        alert(`ブラウザ履歴のデモデータ（${demoHistoryData.length}件）を同期し、自動スタック化を行いました！`);
+    }, 1200);
+}
+
+function executeRealHistorySync() {
+    const statusText = document.getElementById("sync-status-text");
+    const progress = document.getElementById("sync-progress");
+    
+    if (typeof chrome === 'undefined' || !chrome.history) return;
+    
+    const microsecondsPerWeek = 1000 * 60 * 60 * 24 * 7;
+    const oneWeekAgo = (new Date()).getTime() - microsecondsPerWeek;
+    
+    statusText.textContent = "閲覧履歴を読み込んでいます...";
+    progress.style.width = "35%";
+    
+    chrome.history.search({
+        text: '',
+        startTime: oneWeekAgo,
+        maxResults: 80
+    }, function(historyItems) {
+        progress.style.width = "70%";
+        statusText.textContent = "AI分類と自動スタックを処理中...";
+        
+        setTimeout(() => {
+            let addedCount = 0;
+            
+            historyItems.forEach((item, index) => {
+                if (!item.title || !item.url) return;
+                
+                let domain = "unknown.com";
+                try { domain = new URL(item.url).hostname.replace("www.", ""); } catch(e) {}
+                
+                let query = "直接アクセス";
+                try {
+                    const urlObj = new URL(item.url);
+                    if (urlObj.hostname.includes("google.") || urlObj.hostname.includes("bing.") || urlObj.hostname.includes("yahoo.")) {
+                        const q = urlObj.searchParams.get("q") || urlObj.searchParams.get("p");
+                        if (q) query = decodeURIComponent(q).replace(/\+/g, ' ');
+                    }
+                } catch(e) {}
+                
+                const category = autoDetermineCategory(item.title + " " + query);
+                const stackKey = determineStackKey(item.title + " " + query);
+                
+                const newTab = {
+                    id: Date.now() + index,
+                    title: item.title,
+                    url: item.url,
+                    query: query,
+                    category: category,
+                    summary: `${item.title}のページです。実際のブラウザ履歴から同期されました。`,
+                    date: new Date(item.lastVisitTime || Date.now()).toISOString(),
+                    domain: domain,
+                    rating: domain.includes("docs") || domain.includes("developer") || item.url.includes("official") ? 5 : 4,
+                    isTrusted: domain.includes("docs") || domain.includes("developer") || item.url.includes("official"),
+                    stackKey: stackKey
+                };
+                
+                if (!tabs.some(t => t.url === newTab.url)) {
+                    tabs.unshift(newTab);
+                    addedCount++;
+                }
+            });
+            
+            progress.style.width = "100%";
+            statusText.textContent = "同期完了！";
+            
+            setTimeout(() => {
+                const syncModal = document.getElementById("sync-history-modal");
+                if (syncModal) syncModal.classList.remove("open");
+                
+                initCategories();
+                render();
+                
+                alert(`実際のブラウザ履歴から ${addedCount} 件の新規タブを同期・スタック化しました！`);
+            }, 500);
+        }, 800);
+    });
 }
 
 // 簡易カテゴリ自動判定ロジック (AI風)
@@ -876,9 +1161,9 @@ function determineStackKey(text) {
     const textLower = text.toLowerCase();
     
     if (textLower.includes("glassmorphism") || textLower.includes("グラスモルフィズム")) return "glassmorphism";
-    if (textLower.includes("asyncio") || textLower.includes("非同期") || textLower.includes("async")) return "python-async";
-    if (textLower.includes("react 19") || textLower.includes("react19")) return "react19";
-    if (textLower.includes("京都") || textLower.includes("kyoto")) return "kyoto-travel";
+    if (textLower.includes("asyncio") || textLower.includes("非同期") || textLower.includes("async") || textLower.includes("promise")) return "python-async";
+    if (textLower.includes("react 19") || textLower.includes("react19") || textLower.includes("next.js") || textLower.includes("nextjs")) return "react19";
+    if (textLower.includes("京都") || textLower.includes("kyoto") || textLower.includes("嵐山")) return "kyoto-travel";
     if (textLower.includes("レシピ") || textLower.includes("ハンバーグ")) return "hamburg-recipe";
     
     return null; // スタックしない

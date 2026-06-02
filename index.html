@@ -93,6 +93,18 @@
                 </div>
                 
                 <div class="action-controls">
+                    <!-- テーマ切り替えボタン -->
+                    <button class="theme-toggle-btn" id="theme-toggle" title="テーマを切り替え">
+                        <i data-lucide="sun" id="theme-icon-sun"></i>
+                        <i data-lucide="moon" id="theme-icon-moon" style="display: none;"></i>
+                    </button>
+
+                    <!-- 履歴同期ボタン -->
+                    <button class="btn btn-secondary" id="btn-sync-history" title="ブラウザの履歴を同期">
+                        <i data-lucide="history"></i>
+                        <span>履歴同期</span>
+                    </button>
+
                     <!-- 自動スタックトグル -->
                     <div class="control-switch-wrapper">
                         <span class="switch-label">
@@ -251,6 +263,18 @@
             </button>
             <div class="modal-body" id="modal-content">
                 <!-- JavaScriptで詳細内容を流し込みます -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 履歴同期用モーダルダイアログ -->
+    <div class="modal-backdrop" id="sync-history-modal" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="btn-close-sync-modal">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-body" id="sync-modal-content">
+                <!-- JavaScriptで同期内容やガイドを流し込みます -->
             </div>
         </div>
     </div>
