@@ -4,60 +4,60 @@
 
 /* 変数定義 */
 :root {
-    --bg-main: #06070a;
-    --bg-card: rgba(255, 255, 255, 0.035);
-    --bg-card-hover: rgba(255, 255, 255, 0.07);
-    --bg-sidebar: rgba(10, 11, 18, 0.6);
-    --bg-header: rgba(6, 7, 10, 0.4);
+    --bg-main: #0a0b12; /* deeper navy */
+    --bg-card: rgba(255, 255, 255, 0.04);
+    --bg-card-hover: rgba(255, 255, 255, 0.08);
+    --bg-sidebar: rgba(13, 14, 22, 0.65);
+    --bg-header: rgba(10, 11, 18, 0.5);
     
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.18);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.25);
     
     /* アクセントネオンカラー */
-    --color-primary: #a855f7;      /* パープル */
-    --color-primary-glow: rgba(168, 85, 247, 0.35);
-    --color-secondary: #06b6d4;    /* シアン */
-    --color-secondary-glow: rgba(6, 182, 212, 0.35);
+    --color-primary: #b065ff;      /* パープル (より明るく) */
+    --color-primary-glow: rgba(176, 101, 255, 0.4);
+    --color-secondary: #00d2ff;    /* シアン (より鮮やかに) */
+    --color-secondary-glow: rgba(0, 210, 255, 0.4);
     
-    --color-success: #10b981;      /* グリーン */
-    --color-warning: #f59e0b;      /* イエロー */
-    --color-danger: #ef4444;       /* レッド */
-    --color-info: #3b82f6;         /* ブルー */
+    --color-success: #10b981;      
+    --color-warning: #f59e0b;      
+    --color-danger: #ef4444;       
+    --color-info: #3b82f6;         
     
-    /* テキストカラー */
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
-    --text-muted: #6b7280;
+    /* テキストカラー (可読性アップ) */
+    --text-primary: #ffffff;       
+    --text-secondary: #cbd5e1;     
+    --text-muted: #94a3b8;         
     
-    --glass-blur: 16px;
-    --glass-saturate: 140%;
+    --glass-blur: 24px;
+    --glass-saturate: 150%;
     
     --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     
-    --orb-opacity: 0.15;
+    --orb-opacity: 0.2;
 }
 
 :root[data-theme="light"] {
-    --bg-main: #f8fafc;
-    --bg-card: rgba(255, 255, 255, 0.65);
-    --bg-card-hover: rgba(255, 255, 255, 0.9);
-    --bg-sidebar: rgba(241, 245, 249, 0.7);
-    --bg-header: rgba(248, 250, 252, 0.4);
+    --bg-main: #f1f5f9; /* よりクリーンなグレー */
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-card-hover: rgba(255, 255, 255, 1);
+    --bg-sidebar: rgba(255, 255, 255, 0.85);
+    --bg-header: rgba(241, 245, 249, 0.6);
     
     --border-color: rgba(15, 23, 42, 0.08);
-    --border-hover: rgba(15, 23, 42, 0.18);
+    --border-hover: rgba(15, 23, 42, 0.2);
     
     --color-primary: #8b5cf6;
-    --color-primary-glow: rgba(139, 92, 246, 0.2);
-    --color-secondary: #0891b2;
-    --color-secondary-glow: rgba(8, 145, 178, 0.2);
+    --color-primary-glow: rgba(139, 92, 246, 0.3);
+    --color-secondary: #0ea5e9;
+    --color-secondary-glow: rgba(14, 165, 233, 0.3);
     
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
+    --text-primary: #0f172a; /* より濃い黒でコントラスト向上 */
+    --text-secondary: #334155;
+    --text-muted: #64748b;
     
-    --orb-opacity: 0.25;
+    --orb-opacity: 0.3;
 }
 
 /* 基本設定 */
@@ -1806,3 +1806,25 @@ input:checked + .slider:before {
 :root[data-theme="light"] .modal-detail-summary-text {
     color: #0f172a;
 }
+ 
+ / *   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =  
+       O v e r r i d e s   f o r   P r e m i u m   U I  
+       = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =   * /  
+ b o d y   {   f o n t - s i z e :   1 5 p x ;   l i n e - h e i g h t :   1 . 6 ;   }  
+ . l o g o - s u b t i t l e   {   f o n t - s i z e :   1 2 p x ;   l e t t e r - s p a c i n g :   2 p x ;   }  
+ . s e c t i o n - t i t l e   {   f o n t - s i z e :   1 2 p x ;   }  
+ . v i e w - b t n   {   f o n t - s i z e :   1 5 p x ;   p a d d i n g :   1 2 p x   1 6 p x ;   }  
+ . c a t e g o r y - i t e m   {   f o n t - s i z e :   1 5 p x ;   p a d d i n g :   1 2 p x   1 4 p x ;   }  
+ . s t a t - v a l   {   f o n t - s i z e :   2 4 p x ;   }  
+ . s t a t - l b l   {   f o n t - s i z e :   1 2 p x ;   }  
+ . i n f o - b o x   p   {   f o n t - s i z e :   1 3 p x ;   }  
+ . c a r d - d o m a i n - b a d g e   {   f o n t - s i z e :   1 1 p x ;   p a d d i n g :   4 p x   8 p x ;   }  
+ . c a r d - d a t e   {   f o n t - s i z e :   1 2 p x ;   }  
+ . c a r d - t i t l e   {   f o n t - s i z e :   1 8 p x ;   l i n e - h e i g h t :   1 . 4 ;   m a r g i n - b o t t o m :   1 2 p x ;   f o n t - w e i g h t :   7 0 0 ;   }  
+ . c a r d - d e s c   {   f o n t - s i z e :   1 4 p x ;   l i n e - h e i g h t :   1 . 6 ;   c o l o r :   v a r ( - - t e x t - s e c o n d a r y ) ;   }  
+ . t a g   {   f o n t - s i z e :   1 2 p x ;   p a d d i n g :   4 p x   1 0 p x ;   }  
+ . t a b - s t a c k . c o l l a p s e d : h o v e r   . t a b - c a r d : n t h - c h i l d ( 1 )   {   t r a n s f o r m :   t r a n s l a t e Y ( - 8 p x )   r o t a t e ( - 2 d e g )   s c a l e ( 1 . 0 2 ) ;   b o x - s h a d o w :   - 4 p x   1 2 p x   2 4 p x   r g b a ( 0 , 0 , 0 , 0 . 3 ) ;   z - i n d e x :   5 ;   }  
+ . t a b - s t a c k . c o l l a p s e d : h o v e r   . t a b - c a r d : n t h - c h i l d ( 2 )   {   t r a n s f o r m :   t r a n s l a t e Y ( 6 p x )   r o t a t e ( 3 d e g )   s c a l e ( 0 . 9 8 ) ;   z - i n d e x :   4 ;   }  
+ . t a b - s t a c k . c o l l a p s e d : h o v e r   . t a b - c a r d : n t h - c h i l d ( 3 )   {   t r a n s f o r m :   t r a n s l a t e Y ( 2 0 p x )   r o t a t e ( - 2 d e g )   s c a l e ( 0 . 9 4 ) ;   z - i n d e x :   3 ;   }  
+ . t a b - s t a c k . c o l l a p s e d : h o v e r   . s t a c k - c o u n t - b a d g e   {   t r a n s f o r m :   t r a n s l a t e Y ( - 1 5 p x )   s c a l e ( 1 . 1 ) ;   }  
+ 

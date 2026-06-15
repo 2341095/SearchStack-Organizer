@@ -820,21 +820,31 @@ function setupEventListeners() {
         }
     });
 
-    // 新規タブ登録フォームのトグル
-    const addSection = document.getElementById("add-tab-section");
+    // 新規タブ登録フォーム（モーダル）のトグル
+    const addModal = document.getElementById("add-tab-modal");
     const btnToggleForm = document.getElementById("btn-toggle-add-form");
     const btnCancelAdd = document.getElementById("btn-cancel-add");
+    const btnCloseAddModal = document.getElementById("btn-close-add-modal");
 
-    btnToggleForm.addEventListener("click", () => {
-        addSection.classList.toggle("open");
-        if (addSection.classList.contains("open")) {
-            document.getElementById("input-title").focus();
-        }
-    });
+    function openAddModal() {
+        addModal.classList.add("open");
+        document.getElementById("input-title").focus();
+    }
 
-    btnCancelAdd.addEventListener("click", () => {
-        addSection.classList.remove("open");
+    function closeAddModal() {
+        addModal.classList.remove("open");
         document.getElementById("add-tab-form").reset();
+    }
+
+    btnToggleForm.addEventListener("click", openAddModal);
+    btnCancelAdd.addEventListener("click", closeAddModal);
+    if (btnCloseAddModal) btnCloseAddModal.addEventListener("click", closeAddModal);
+    
+    // モーダル背景クリックで閉じる
+    addModal.addEventListener("click", (e) => {
+        if (e.target.id === "add-tab-modal") {
+            closeAddModal();
+        }
     });
 
     // タブ追加サブミット
@@ -884,7 +894,7 @@ function setupEventListeners() {
         tabs.unshift(newTab);
 
         // フォームを閉じてクリア
-        addSection.classList.remove("open");
+        closeAddModal();
         addForm.reset();
 
         // UIの再構成と描画

@@ -125,53 +125,7 @@
                 </div>
             </header>
 
-            <!-- 新規タブ追加フォーム (アコーディオン表示) -->
-            <section class="add-tab-section" id="add-tab-section">
-                <div class="add-tab-card">
-                    <div class="add-tab-header">
-                        <h4>新しい検索結果・タブの登録シミュレーション</h4>
-                        <p>ブラウザで新しいページを開いたり、検索した時の動作をシミュレートします。</p>
-                    </div>
-                    <form id="add-tab-form">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="input-title">タイトル</label>
-                                <input type="text" id="input-title" placeholder="例: Tailwind CSS - Rapidly build modern websites" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="input-url">URL</label>
-                                <input type="url" id="input-url" placeholder="https://tailwindcss.com" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="input-query">検索キーワード</label>
-                                <input type="text" id="input-query" placeholder="例: tailwind css ドキュメント 導入方法">
-                            </div>
-                            <div class="form-group">
-                                <label for="input-category">ジャンル (空欄で自動判定)</label>
-                                <select id="input-category">
-                                    <option value="">自動判定 (AI)</option>
-                                    <option value="プログラミング">プログラミング</option>
-                                    <option value="デザイン">デザイン</option>
-                                    <option value="AI・機械学習">AI・機械学習</option>
-                                    <option value="旅行・情報">旅行・情報</option>
-                                    <option value="その他">その他</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group full-width">
-                            <label for="input-summary">ページの概要・要約（ひと目でわかる内容）</label>
-                            <textarea id="input-summary" rows="2" placeholder="例: ユーティリティファーストのCSSフレームワーク。HTMLを離れることなく素早くUIを構築できる。" required></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-secondary" id="btn-cancel-add">キャンセル</button>
-                            <button type="submit" class="btn btn-primary">
-                                <i data-lucide="plus-circle"></i>
-                                <span>タブを保存</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </section>
+
 
             <!-- ボード表示エリア -->
             <div class="board-view-container" id="board-view">
@@ -253,6 +207,59 @@
                 </ul>
             </div>
         </aside>
+    </div>
+
+    <!-- 新規タブ追加用モーダルダイアログ -->
+    <div class="modal-backdrop" id="add-tab-modal" style="display: none;">
+        <div class="modal-card">
+            <button class="modal-close-btn" id="btn-close-add-modal">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-body">
+                <div class="add-tab-header">
+                    <h4>新しい検索結果・タブの登録</h4>
+                    <p>ブラウザで新しいページを開いたり、検索した時の動作をシミュレートします。</p>
+                </div>
+                <form id="add-tab-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="input-title">タイトル</label>
+                            <input type="text" id="input-title" placeholder="例: Tailwind CSS - Rapidly build modern websites" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-url">URL</label>
+                            <input type="url" id="input-url" placeholder="https://tailwindcss.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="input-query">検索キーワード</label>
+                            <input type="text" id="input-query" placeholder="例: tailwind css ドキュメント 導入方法">
+                        </div>
+                        <div class="form-group">
+                            <label for="input-category">ジャンル (空欄で自動判定)</label>
+                            <select id="input-category">
+                                <option value="">自動判定 (AI)</option>
+                                <option value="プログラミング">プログラミング</option>
+                                <option value="デザイン">デザイン</option>
+                                <option value="AI・機械学習">AI・機械学習</option>
+                                <option value="旅行・情報">旅行・情報</option>
+                                <option value="その他">その他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="input-summary">ページの概要・要約（ひと目でわかる内容）</label>
+                        <textarea id="input-summary" rows="2" placeholder="例: ユーティリティファーストのCSSフレームワーク。HTMLを離れることなく素早くUIを構築できる。" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="btn-cancel-add">キャンセル</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="plus-circle"></i>
+                            <span>タブを保存</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- 詳細表示・プレビュー用モーダルダイアログ -->
