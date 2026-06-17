@@ -749,11 +749,9 @@ input:checked + .slider:before {
 /* 個々のタブカード */
 .tab-card {
     background: var(--bg-card);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    padding: 16px;
+    padding: 20px 24px;
     cursor: pointer;
     transition: var(--transition-bounce);
     position: relative;
@@ -808,11 +806,12 @@ input:checked + .slider:before {
 }
 
 .card-title {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: #fff;
-    line-height: 1.4;
-    margin-bottom: 8px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -821,10 +820,11 @@ input:checked + .slider:before {
 }
 
 .card-summary {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
-    line-height: 1.5;
-    margin-bottom: 12px;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+    margin-bottom: 14px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -890,11 +890,11 @@ input:checked + .slider:before {
     height: auto;
 }
 
-/* 後ろの重ねカードのスタイリング - 扇状の3D重なり */
+/* 後ろの重ねカードのスタイリング - 平らな重なり */
 .tab-stack.collapsed .tab-card:nth-child(1) {
     position: relative;
     z-index: 3;
-    transform: rotate(0deg);
+    transform: none;
     transition: var(--transition-bounce);
 }
 
@@ -906,7 +906,7 @@ input:checked + .slider:before {
     height: 100%;
     z-index: 2;
     opacity: 0.85;
-    transform: translateY(6px) scale(0.96) rotate(-1.5deg);
+    transform: translateY(8px) scale(0.98);
     pointer-events: none;
     transition: var(--transition-bounce);
 }
@@ -919,7 +919,7 @@ input:checked + .slider:before {
     height: 100%;
     z-index: 1;
     opacity: 0.65;
-    transform: translateY(12px) scale(0.92) rotate(1.5deg);
+    transform: translateY(16px) scale(0.96);
     pointer-events: none;
     transition: var(--transition-bounce);
 }
@@ -929,18 +929,18 @@ input:checked + .slider:before {
     display: none;
 }
 
-/* スタックホバー時のファンアウト展開（扇状に少し開いて見える） */
+/* スタックホバー時の展開（下にスライドして少し開いて見える） */
 .tab-stack.collapsed:hover .tab-card:nth-child(1) {
-    transform: translateY(-4px) rotate(-1deg);
+    transform: translateY(-4px);
 }
 
 .tab-stack.collapsed:hover .tab-card:nth-child(2) {
-    transform: translate(12px, -2px) scale(0.97) rotate(3deg);
+    transform: translateY(4px) scale(0.98);
     opacity: 0.95;
 }
 
 .tab-stack.collapsed:hover .tab-card:nth-child(3) {
-    transform: translate(-12px, 2px) scale(0.94) rotate(-5deg);
+    transform: translateY(12px) scale(0.96);
     opacity: 0.8;
 }
 
@@ -1161,16 +1161,18 @@ input:checked + .slider:before {
 }
 
 .timeline-title {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
-    color: #fff;
-    margin-bottom: 4px;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
 }
 
 .timeline-summary {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
-    line-height: 1.4;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
 }
 
 .timeline-meta {
