@@ -143,8 +143,28 @@ const initialTabs = [
     }
 ];
 
+// XSS対策用エスケープ関数
+const escapeHTML = (str) => {
+    if (str == null) return "";
+    return String(str).replace(/[&<>"']/g, function(match) {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[match];
+    });
+};
+
+// データの永続化
+function saveTabs() {
+    localStorage.setItem("searchstack-tabs", JSON.stringify(tabs));
+}
+
 // アプリケーションの状態管理
-let tabs = [...initialTabs];
+let savedTabs = localStorage.getItem("searchstack-tabs");
+let tabs = savedTabs ? JSON.parse(savedTabs) : [...initialTabs];
 let activeCategory = 'all';
 let activeView = 'board'; // 'board' または 'timeline'
 let searchQuery = '';
@@ -370,8 +390,8 @@ function renderBoard() {
                         const item = document.createElement("div");
                         item.className = "stack-hover-item";
                         item.innerHTML = `
-                            <span class="stack-hover-title">${t.title}</span>
-                            <span class="stack-hover-domain">${t.domain}</span>
+                            <span class="stack-hover-title">${escapeHTML(t.title)}</span>
+                            <span class="stack-hover-domain">${escapeHTML(t.domain)}</span>
                         `;
                         hoverList.appendChild(item);
                     });
@@ -455,14 +475,14 @@ function createCardElement(tab) {
     card.innerHTML = `
         <div class="card-header">
             ${isTrustedBadge}
-            <span class="card-genre-badge">${tab.category}</span>
+            <span class="card-genre-badge">${escapeHTML(tab.category)}</span>
         </div>
-        <h4 class="card-title">${tab.title}</h4>
-        <p class="card-summary">${tab.summary}</p>
+        <h4 class="card-title">${escapeHTML(tab.title)}</h4>
+        <p class="card-summary">${escapeHTML(tab.summary)}</p>
         <div class="card-footer">
-            <span class="card-query" title="検索ワード: ${tab.query}">
+            <span class="card-query" title="検索ワード: ${escapeHTML(tab.query)}">
                 <i data-lucide="search"></i>
-                <span>${tab.query || "直接入力"}</span>
+                <span>${escapeHTML(tab.query) || "直接入力"}</span>
             </span>
             <div class="card-rating">
                 ${ratingStars}
@@ -528,12 +548,12 @@ function renderTimeline() {
             item.innerHTML = `
                 <div class="timeline-time">${timeStr}</div>
                 <div class="timeline-content">
-                    <div class="timeline-title">${tab.title}</div>
-                    <div class="timeline-summary">${tab.summary}</div>
+                    <div class="timeline-title">${escapeHTML(tab.title)}</div>
+                    <div class="timeline-summary">${escapeHTML(tab.summary)}</div>
                     <div class="timeline-meta">
-                        <span>ジャンル: ${tab.category}</span>
-                        <span>ドメイン: ${tab.domain}</span>
-                        <span>検索ワード: "${tab.query || "直接入力"}"</span>
+                        <span>ジャンル: ${escapeHTML(tab.category)}</span>
+                        <span>ドメイン: ${escapeHTML(tab.domain)}</span>
+                        <span>検索ワード: "${escapeHTML(tab.query) || "直接入力"}"</span>
                     </div>
                 </div>
             `;
@@ -586,7 +606,7 @@ function updateSuggestions() {
             const item = document.createElement("div");
             item.className = "suggestion-item";
             item.innerHTML = `
-                <div class="suggestion-item-title">${tab.title}</div>
+                <div class="suggestion-item-title">${escapeHTML(tab.title)}</div>
                 <div class="suggestion-item-meta">
                     <span style="color: var(--color-success); font-weight: 600;">
                         <i data-lucide="shield-check" style="width: 10px; height: 10px; display: inline; vertical-align: middle; margin-right: 2px;"></i>公式/高信頼
@@ -693,10 +713,10 @@ function showDetailModal(tab) {
     content.innerHTML = `
         <div class="modal-detail-header">
             <div class="modal-detail-meta">
-                <span class="card-domain-badge">${tab.domain}</span>
-                <span class="card-genre-badge">${tab.category}</span>
+                <span class="card-domain-badge">${escapeHTML(tab.domain)}</span>
+                <span class="card-genre-badge">${escapeHTML(tab.category)}</span>
             </div>
-            <h3 class="modal-detail-title">${tab.title}</h3>
+            <h3 class="modal-detail-title">${escapeHTML(tab.title)}</h3>
         </div>
         
         <div class="modal-detail-summary-box">
@@ -704,13 +724,13 @@ function showDetailModal(tab) {
                 <i data-lucide="sparkles" style="width: 12px; height: 12px; display:inline; vertical-align: middle; margin-right: 4px; stroke: var(--color-secondary);"></i>
                 ひと目でわかる概要 (AI要約)
             </div>
-            <div class="modal-detail-summary-text">${tab.summary}</div>
+            <div class="modal-detail-summary-text">${escapeHTML(tab.summary)}</div>
         </div>
 
         <div class="modal-detail-info-grid">
             <div class="info-grid-item">
                 <div class="info-grid-lbl">検索時のキーワード</div>
-                <div class="info-grid-val">"${tab.query || "直接入力"}"</div>
+                <div class="info-grid-val">"${escapeHTML(tab.query) || "直接入力"}"</div>
             </div>
             <div class="info-grid-item">
                 <div class="info-grid-lbl">保存日時</div>
@@ -731,7 +751,7 @@ function showDetailModal(tab) {
         </div>
 
         <div class="modal-detail-actions">
-            <a href="${tab.url}" target="_blank" class="modal-url-link">
+            <a href="${escapeHTML(tab.url)}" target="_blank" class="modal-url-link">
                 <span>実際のブラウザで開く</span>
                 <i data-lucide="external-link"></i>
             </a>
@@ -746,6 +766,7 @@ function showDetailModal(tab) {
     document.getElementById("btn-delete-tab").addEventListener("click", () => {
         if (confirm("この保存済みタブを削除しますか？")) {
             tabs = tabs.filter(t => t.id !== tab.id);
+            saveTabs();
             closeModal();
             initCategories();
             render();
@@ -892,6 +913,7 @@ function setupEventListeners() {
 
         // 配列の先頭に追加
         tabs.unshift(newTab);
+        saveTabs();
 
         // フォームを閉じてクリア
         closeAddModal();
@@ -1060,6 +1082,7 @@ function loadDemoHistory() {
                 tabs.unshift(newTab);
             }
         });
+        saveTabs();
         
         const syncModal = document.getElementById("sync-history-modal");
         if (syncModal) syncModal.classList.remove("open");
@@ -1131,6 +1154,7 @@ function executeRealHistorySync() {
                     addedCount++;
                 }
             });
+            saveTabs();
             
             progress.style.width = "100%";
             statusText.textContent = "同期完了！";
