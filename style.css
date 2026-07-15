@@ -961,8 +961,174 @@ input:checked + .slider:before {
     transition: var(--transition-smooth);
 }
 
-.tab-stack.collapsed:hover .stack-count-badge {
-    transform: scale(1.1);
+.tab-stack.collapsed:hover .stack-count-badge { transform: translateY(-15px) scale(1.1); }
+
+/* ==========================================
+   レスポンシブ・モバイル対応 (iPad & Mobile)
+   ========================================== */
+
+/* モバイル用UI要素 (初期非表示) */
+.mobile-toggle-btn {
+    display: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    flex-shrink: 0;
+}
+
+.mobile-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-hover);
+}
+
+.mobile-toggle-btn i {
+    width: 20px;
+    height: 20px;
+}
+
+:root[data-theme="light"] .mobile-toggle-btn {
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-primary);
+}
+
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+/* タブレット (iPadなど max-width: 1024px) */
+@media (max-width: 1024px) {
+    .app-container {
+        grid-template-columns: 240px 1fr;
+    }
+
+    /* 右側の提案パネルをドロワー化 */
+    .suggestion-panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+        width: 320px;
+        height: 100vh;
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 50;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .suggestion-panel.open {
+        transform: translateX(0);
+    }
+
+    /* AI提案トグルボタンを表示 */
+    .action-controls #mobile-suggestion-toggle {
+        display: flex;
+    }
+
+    .tab-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+/* スマートフォン (max-width: 768px) */
+@media (max-width: 768px) {
+    .app-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 左サイドバーをドロワー化 */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 280px;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 50;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* トップバーの調整 */
+    .top-bar {
+        padding: 12px 0;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    /* ハンバーガートグルボタンを表示 */
+    .top-bar > #mobile-sidebar-toggle {
+        display: flex;
+    }
+
+    .search-wrapper {
+        order: 3;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 8px;
+    }
+
+    .action-controls {
+        flex-grow: 1;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .action-controls .btn span,
+    .switch-label {
+        display: none; /* テキストを隠してアイコンだけにする */
+    }
+
+    .btn {
+        padding: 10px;
+    }
+
+    .main-content {
+        padding: 16px;
+    }
+
+    .tab-grid {
+        grid-template-columns: 1fr; /* スマホでは1カラム */
+        gap: 16px;
+    }
+
+    /* モーダル調整 */
+    .modal-card {
+        padding: 16px;
+        width: 95%;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-detail-info-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* エクスパンド (展開された) 状態のスタック */

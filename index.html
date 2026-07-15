@@ -25,6 +25,8 @@
 
     <!-- メインアプリケーションコンテナ -->
     <div class="app-container">
+        <!-- モバイル用オーバーレイ -->
+        <div class="mobile-overlay" id="mobile-overlay"></div>
         
         <!-- 左サイドバー (ナビゲーション & カテゴリ) -->
         <aside class="sidebar">
@@ -87,6 +89,11 @@
         <main class="main-content">
             <!-- トップコントロールバー -->
             <header class="top-bar">
+                <!-- モバイル用サイドバートグル -->
+                <button class="mobile-toggle-btn" id="mobile-sidebar-toggle">
+                    <i data-lucide="menu"></i>
+                </button>
+
                 <div class="search-wrapper">
                     <i data-lucide="search" class="search-icon"></i>
                     <input type="text" id="search-input" placeholder="キーワード、URL、概要から検索..." autocomplete="off">
@@ -96,6 +103,11 @@
                 </div>
                 
                 <div class="action-controls">
+                    <!-- モバイル用AI提案トグル -->
+                    <button class="mobile-toggle-btn" id="mobile-suggestion-toggle">
+                        <i data-lucide="sparkles"></i>
+                    </button>
+
                     <!-- テーマ切り替えボタン -->
                     <button class="theme-toggle-btn" id="theme-toggle" title="テーマを切り替え">
                         <i data-lucide="sun" id="theme-icon-sun"></i>

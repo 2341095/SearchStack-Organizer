@@ -955,6 +955,37 @@ function setupEventListeners() {
             }
         });
     }
+
+    // モバイル用ドロワー開閉制御
+    const mobileSidebarToggle = document.getElementById("mobile-sidebar-toggle");
+    const mobileSuggestionToggle = document.getElementById("mobile-suggestion-toggle");
+    const sidebar = document.querySelector(".sidebar");
+    const suggestionPanel = document.querySelector(".suggestion-panel");
+    const mobileOverlay = document.getElementById("mobile-overlay");
+
+    function closeAllDrawers() {
+        if (sidebar) sidebar.classList.remove("open");
+        if (suggestionPanel) suggestionPanel.classList.remove("open");
+        if (mobileOverlay) mobileOverlay.classList.remove("show");
+    }
+
+    if (mobileSidebarToggle && sidebar && mobileOverlay) {
+        mobileSidebarToggle.addEventListener("click", () => {
+            sidebar.classList.add("open");
+            mobileOverlay.classList.add("show");
+        });
+    }
+
+    if (mobileSuggestionToggle && suggestionPanel && mobileOverlay) {
+        mobileSuggestionToggle.addEventListener("click", () => {
+            suggestionPanel.classList.add("open");
+            mobileOverlay.classList.add("show");
+        });
+    }
+
+    if (mobileOverlay) {
+        mobileOverlay.addEventListener("click", closeAllDrawers);
+    }
 }
 
 // 履歴同期モーダルの表示制御
